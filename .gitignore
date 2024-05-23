@@ -1,0 +1,3 @@
+build
+*.sh
+.clang-format
