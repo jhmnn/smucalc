@@ -10,3 +10,9 @@ target_sources(
   PRIVATE
     smucalc/main.cpp
 )
+
+target_link_libraries(
+  ${target_name}
+  PRIVATE
+    wrl
+)

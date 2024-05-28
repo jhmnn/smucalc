@@ -54,7 +54,9 @@ Checks: >
   -google-runtime-int,
   -cert-dcl21-cpp,
   -readability-redundant-access-specifiers,
-  -readability-suspicious-call-argument
+  -readability-suspicious-call-argument,
+  -readability-implicit-bool-conversion,
+  -abseil-string-find-str-contains
 WarningsAsErrors: '*'
 HeaderFilterRegex: '(libmsv)/'
 AnalyzeTemporaryDtors: false
