@@ -56,7 +56,9 @@ Checks: >
   -readability-redundant-access-specifiers,
   -readability-suspicious-call-argument,
   -readability-implicit-bool-conversion,
-  -abseil-string-find-str-contains
+  -abseil-string-find-str-contains,
+  -hicpp-use-emplace,
+  -modernize-use-emplace
 WarningsAsErrors: '*'
 HeaderFilterRegex: '(libmsv)/'
 AnalyzeTemporaryDtors: false
