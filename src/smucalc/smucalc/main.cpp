@@ -1,5 +1,4 @@
 #include <wrl/wrl.hpp>
-
 int main() {
   std::string buffer;
   jhmnn::Wrl wrl(buffer, ":");

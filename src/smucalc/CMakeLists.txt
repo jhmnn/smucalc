@@ -17,4 +17,5 @@ target_link_libraries(
     wrl
     lexer
     syntaxer
+    ldebug
 )
