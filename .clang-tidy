@@ -58,7 +58,8 @@ Checks: >
   -readability-implicit-bool-conversion,
   -abseil-string-find-str-contains,
   -hicpp-use-emplace,
-  -modernize-use-emplace
+  -modernize-use-emplace,
+  -readability-simplify-boolean-expr
 WarningsAsErrors: '*'
 HeaderFilterRegex: '(libmsv)/'
 AnalyzeTemporaryDtors: false

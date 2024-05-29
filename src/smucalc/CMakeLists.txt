@@ -16,4 +16,5 @@ target_link_libraries(
   PRIVATE
     wrl
     lexer
+    syntaxer
 )
