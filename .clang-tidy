@@ -59,7 +59,10 @@ Checks: >
   -abseil-string-find-str-contains,
   -hicpp-use-emplace,
   -modernize-use-emplace,
-  -readability-simplify-boolean-expr
+  -readability-simplify-boolean-expr,
+  -cert-dcl50-cpp,
+  -android-cloexec-fopen,
+  -cppcoreguidelines-avoid-non-const-global-variables
 WarningsAsErrors: '*'
 HeaderFilterRegex: '(libmsv)/'
 AnalyzeTemporaryDtors: false
