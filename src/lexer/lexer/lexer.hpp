@@ -15,6 +15,12 @@ public:
     Mul,
     Div,
     Mod,
+    Pow,
+    Negative,
+    Sin,
+    Cos,
+    Tan,
+    Factorial,
     RegOpen,
     RegClose,
     Unknown

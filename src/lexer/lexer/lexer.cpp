@@ -6,6 +6,10 @@ bool is_number(char c) { return std::isdigit(c) || c == '.'; }
 
 bool is_identifier(char c) { return std::isalpha(c) || c == '_'; }
 
+bool is_operand(const Token &t) {
+  return t.type == Token::Number || t.type == Token::Identifier;
+}
+
 Token Lexer::make_token_identifier() {
   std::string token;
   while (is_identifier(*it_)) {
@@ -49,7 +53,11 @@ void Lexer::parse(const std::string &str) {
       result_.push_back({*it_, Token::Plus});
       break;
     case '-':
-      result_.push_back({*it_, Token::Minus});
+      if (!result_.empty() && is_operand(result_.back())) {
+        result_.push_back({*it_, Token::Minus});
+      } else {
+        result_.push_back({*it_, Token::Negative});
+      }
       break;
     case '*':
       result_.push_back({*it_, Token::Mul});

@@ -2,9 +2,11 @@
 
 #include <debug/debug.hpp>
 
+#include <cmath>
+
 namespace jhmnn {
 
-bool is_number(const Token &t) {
+bool is_operand(const Token &t) {
   switch (t.type) {
   case Token::Number:
   case Token::Identifier:
@@ -14,9 +16,26 @@ bool is_number(const Token &t) {
   }
 }
 
-bool is_postfix_function(const Token & /*t*/) { return false; }
+bool is_postfix_function(const Token &t) {
+  switch (t.type) {
+  case Token::Factorial:
+    return true;
+  default:
+    return false;
+  };
+}
 
-bool is_prefix_function(const Token & /*t*/) { return false; }
+bool is_prefix_function(const Token &t) {
+  switch (t.type) {
+  case Token::Negative:
+  case Token::Sin:
+  case Token::Cos:
+  case Token::Tan:
+    return true;
+  default:
+    return false;
+  };
+}
 
 bool is_function(const Token &t) {
   return is_prefix_function(t) || is_postfix_function(t);
@@ -29,6 +48,7 @@ bool is_binary_operation(const Token &t) {
   case Token::Mul:
   case Token::Div:
   case Token::Mod:
+  case Token::Pow:
     return true;
   default:
     return false;
@@ -46,6 +66,13 @@ int operation_priority(const Token &t) {
   case Token::Div:
   case Token::Mod:
     return 2;
+  case Token::Pow:
+    return 3;
+  case Token::Negative:
+  case Token::Sin:
+  case Token::Cos:
+  case Token::Tan:
+    return 4;
   default:
     return -1;
   }
@@ -53,7 +80,35 @@ int operation_priority(const Token &t) {
 
 bool is_left_associative(const Token & /*t*/) { return false; }
 
-void Calc::calc_function(const Token & /*t*/) {}
+int factorial(int n) {
+  for (auto i = 0; i < n; ++i) {
+    n *= i;
+  }
+  return n;
+}
+
+void Calc::calc_function(const Token &t) {
+  const double a = result_.top();
+  result_.pop();
+
+  switch (t.type) {
+  case Token::Negative:
+    result_.push(-a);
+    Debug::log("-%f\n", a);
+  case Token::Sin:
+    result_.push(std::sin(a));
+    Debug::log("sin(%f)\n", a);
+  case Token::Cos:
+    result_.push(std::cos(a));
+    Debug::log("cos(%f)\n", a);
+  case Token::Tan:
+    result_.push(std::tan(a));
+    Debug::log("tan(%f)\n", a);
+  case Token::Factorial:
+    result_.push(factorial(static_cast<int>(a)));
+    Debug::log("cos(%f)\n", a);
+  }
+}
 
 void Calc::calc_binary_operation(const Token &t) {
   const double b = result_.top();
@@ -100,7 +155,7 @@ std::vector<Token> expr_to_rpn(Lexer &lexer) {
   lexer.first();
   while (lexer.more()) {
     auto token = lexer.next();
-    if (is_number(token) || is_postfix_function(token)) {
+    if (is_operand(token) || is_postfix_function(token)) {
       out.push_back(token);
     } else if (is_prefix_function(token) || token.type == Token::RegOpen) {
       operations.push(token);
@@ -113,10 +168,7 @@ std::vector<Token> expr_to_rpn(Lexer &lexer) {
     } else if (is_binary_operation(token)) {
       while (!operations.empty()) {
         auto &top = operations.top();
-        if (operation_priority(top) >= operation_priority(token) ||
-            (is_left_associative(top) &&
-             operation_priority(top) == operation_priority(token)) ||
-            is_prefix_function(top)) {
+        if (operation_priority(top) >= operation_priority(token)) {
           out.push_back(top);
           operations.pop();
         } else {
@@ -138,7 +190,7 @@ std::vector<Token> expr_to_rpn(Lexer &lexer) {
 
 void Calc::calc_expr_rpn(std::vector<Token> &expr_rpn) {
   for (auto &token : expr_rpn) {
-    if (is_number(token)) {
+    if (is_operand(token)) {
       result_.push(std::strtof(token.text.c_str(), nullptr));
     } else if (is_function(token)) {
       calc_function(token);
