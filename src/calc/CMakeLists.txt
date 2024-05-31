@@ -1,8 +1,8 @@
-set(target_name syntaxer)
+set(target_name calc)
 
 add_library(${target_name} STATIC
-  syntaxer/syntaxer.hpp
-  syntaxer/syntaxer.cpp
+  calc/calc.hpp
+  calc/calc.cpp
 )
 
 include(CompileOptions)

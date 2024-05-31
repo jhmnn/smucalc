@@ -1,5 +1,5 @@
 add_subdirectory(wrl)
 add_subdirectory(lexer)
-add_subdirectory(syntaxer)
+add_subdirectory(calc)
 add_subdirectory(debug)
 add_subdirectory(smucalc)

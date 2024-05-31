@@ -1,4 +1,4 @@
-#include <syntaxer/syntaxer.hpp>
+#include <calc/calc.hpp>
 
 #include <debug/debug.hpp>
 
@@ -54,9 +54,9 @@ int operation_priority(const Token &t) {
 
 bool is_left_associative(const Token & /*t*/) { return false; }
 
-void Syntaxer::calc_function(const Token & /*t*/) {}
+void Calc::calc_function(const Token & /*t*/) {}
 
-void Syntaxer::calc_binary_operation(const Token &t) {
+void Calc::calc_binary_operation(const Token &t) {
   const double b = result_.top();
   result_.pop();
   const double a = result_.top();
@@ -137,7 +137,7 @@ std::vector<Token> expr_to_rpn(Lexer &lexer) {
   return out;
 }
 
-void Syntaxer::calc_expr_rpn(std::vector<Token> &expr_rpn) {
+void Calc::calc_expr_rpn(std::vector<Token> &expr_rpn) {
   for (auto &token : expr_rpn) {
     if (is_number(token)) {
       result_.push(std::strtof(token.text.c_str(), nullptr));
@@ -149,7 +149,7 @@ void Syntaxer::calc_expr_rpn(std::vector<Token> &expr_rpn) {
   }
 }
 
-double Syntaxer::calc_expr(Lexer &lexer) {
+double Calc::solve(Lexer &lexer) {
   Debug::log("expr: ");
   lexer.first();
   while (lexer.more()) {

@@ -1,6 +1,6 @@
+#include <calc/calc.hpp>
 #include <debug/debug.hpp>
 #include <lexer/lexer.hpp>
-#include <syntaxer/syntaxer.hpp>
 #include <wrl/wrl.hpp>
 
 #include <iostream>
@@ -13,11 +13,11 @@ int main() {
   wrl.init();
 
   jhmnn::Lexer lexer;
-  jhmnn::Syntaxer syntaxer;
+  jhmnn::Calc calc;
   while (true) {
     if (wrl.input()) {
       lexer.parse(buffer);
-      std::cout << "> " << syntaxer.calc_expr(lexer) << '\n';
+      std::cout << "> " << calc.solve(lexer) << '\n';
       if (buffer == "exit") {
         break;
       }

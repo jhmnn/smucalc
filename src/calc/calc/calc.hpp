@@ -8,9 +8,9 @@
 
 namespace jhmnn {
 
-class Syntaxer {
+class Calc {
 public:
-  double calc_expr(Lexer &lexer);
+  double solve(Lexer &lexer);
 
 private:
   void calc_expr_rpn(std::vector<Token> &expr_rpn);
