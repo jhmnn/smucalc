@@ -16,15 +16,11 @@ Token Lexer::make_token_identifier() {
 
 Token Lexer::make_token_number() {
   std::string token;
-  auto type = Token::Int;
   while (is_number(*it_)) {
-    if (*it_ == '.') {
-      type = Token::Float;
-    }
     token += *it_++;
   }
 
-  return {token, type};
+  return {token, Token::Type::Number};
 }
 
 void Lexer::parse(const std::string &str) {

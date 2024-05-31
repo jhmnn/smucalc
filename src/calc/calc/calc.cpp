@@ -6,8 +6,7 @@ namespace jhmnn {
 
 bool is_number(const Token &t) {
   switch (t.type) {
-  case Token::Int:
-  case Token::Float:
+  case Token::Number:
   case Token::Identifier:
     return true;
   default:

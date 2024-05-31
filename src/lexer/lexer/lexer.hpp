@@ -8,8 +8,7 @@ namespace jhmnn {
 struct Token {
 public:
   enum Type {
-    Int,
-    Float,
+    Number,
     Identifier,
     Plus,
     Minus,
