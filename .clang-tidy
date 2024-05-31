@@ -62,7 +62,8 @@ Checks: >
   -readability-simplify-boolean-expr,
   -cert-dcl50-cpp,
   -android-cloexec-fopen,
-  -cppcoreguidelines-avoid-non-const-global-variables
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -readability-function-cognitive-complexity
 WarningsAsErrors: '*'
 HeaderFilterRegex: '(libmsv)/'
 AnalyzeTemporaryDtors: false

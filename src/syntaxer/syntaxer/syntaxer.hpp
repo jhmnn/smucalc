@@ -13,7 +13,7 @@ public:
   double calc_expr(Lexer &lexer);
 
 private:
-  void calc_expression(std::vector<Token *> &expr_rpn);
+  void calc_expr_rpn(std::vector<Token> &expr_rpn);
   void calc_function(const Token &t);
   void calc_binary_operation(const Token &t);
 
