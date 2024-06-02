@@ -1,6 +1,7 @@
 #pragma once
 
 #include <lexer/lexer.hpp>
+#include <rational/rational.hpp>
 
 #include <stack>
 #include <string>
@@ -14,11 +15,11 @@ public:
 
 private:
   void calc_expr_rpn(std::vector<Token> &expr_rpn);
-  void calc_function(const Token &t);
-  void calc_binary_operation(const Token &t);
+  void calc_func(const Token &t);
+  void calc_bin_op(const Token &t);
 
 private:
-  std::stack<double> result_;
+  std::stack<Rational> result_;
   std::vector<std::string> errors_;
 };
 

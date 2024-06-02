@@ -14,6 +14,7 @@ target_sources(
 target_link_libraries(
   ${target_name}
   PRIVATE
+    rational
     wrl
     lexer
     calc

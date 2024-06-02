@@ -6,8 +6,33 @@ bool is_number(char c) { return std::isdigit(c) || c == '.'; }
 
 bool is_identifier(char c) { return std::isalpha(c) || c == '_'; }
 
-Token::Type define_minus_type(const Token &t) {
-  switch (t.type) {
+void change_if_function(Token &t) {
+  const std::string &s = t.text;
+  if (s == "sqrt") {
+    t.type = Token::Type::Sqrt;
+  } else if (s == "sin") {
+    t.type = Token::Type::Sin;
+  } else if (s == "cos") {
+    t.type = Token::Type::Cos;
+  } else if (s == "tan") {
+    t.type = Token::Type::Tan;
+  } else if (s == "cot") {
+    t.type = Token::Type::Cot;
+  } else if (s == "ln") {
+    t.type = Token::Type::Log;
+  } else if (s == "log") {
+    t.type = Token::Type::Log2;
+  } else if (s == "lg") {
+    t.type = Token::Type::Log10;
+  }
+}
+
+Token::Type define_minus_type(const std::vector<Token> &v) {
+  if (v.empty()) {
+    return Token::Type::Negative;
+  }
+
+  switch (v.back().type) {
   case Token::Type::Number:
   case Token::Type::Identifier:
   case Token::Type::RegClose:
@@ -22,7 +47,11 @@ Token Lexer::make_token_identifier() {
   while (is_identifier(*it_)) {
     token += *it_++;
   }
-  return {token, Token::Type::Identifier};
+
+  Token t = {token, Token::Type::Identifier};
+  change_if_function(t);
+
+  return t;
 }
 
 Token Lexer::make_token_number() {
@@ -60,7 +89,7 @@ void Lexer::parse(const std::string &str) {
       result_.push_back({*it_, Token::Type::Plus});
       break;
     case '-':
-      result_.push_back({*it_, define_minus_type(result_.back())});
+      result_.push_back({*it_, define_minus_type(result_)});
       break;
     case '*':
       result_.push_back({*it_, Token::Type::Mul});
@@ -70,6 +99,12 @@ void Lexer::parse(const std::string &str) {
       break;
     case '%':
       result_.push_back({*it_, Token::Type::Mod});
+      break;
+    case '^':
+      result_.push_back({*it_, Token::Type::Pow});
+      break;
+    case '!':
+      result_.push_back({*it_, Token::Type::Factorial});
       break;
     case '(':
       result_.push_back({*it_, Token::Type::RegOpen});

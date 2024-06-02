@@ -32,6 +32,7 @@ public:
   friend Rational operator-(const Rational &x, const Rational &y);
   friend Rational operator*(const Rational &x, const Rational &y);
   friend Rational operator/(const Rational &x, const Rational &y);
+  friend Rational operator%(const Rational &x, const Rational &y);
 
   Rational operator-() const;
 
@@ -39,8 +40,10 @@ public:
   Rational &operator-=(const Rational &x);
   Rational &operator*=(const Rational &x);
   Rational &operator/=(const Rational &x);
+  Rational &operator%=(const Rational &x);
 
   double value() const;
+  int integ() const;
 
   double fac() const;
   double pow(const Rational &x) const;
@@ -64,7 +67,8 @@ private:
 };
 
 template <typename Int>
-Rational::Rational(Int number) : num_(static_cast<std::int64_t>(number)), den_(1) {}
+Rational::Rational(Int number)
+    : num_(static_cast<std::int64_t>(number)), den_(1) {}
 
 template <typename Int1, typename Int2>
 Rational::Rational(Int1 numerator, Int2 denominator)

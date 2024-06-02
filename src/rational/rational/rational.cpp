@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <numeric>
-#include <stdexcept>
 
 namespace jhmnn {
 
@@ -76,6 +75,10 @@ Rational operator/(const Rational &x, const Rational &y) {
   return {x.num_ * y.den_, y.num_ * x.den_};
 }
 
+Rational operator%(const Rational &x, const Rational &y) {
+  return x < y ? x : (x - (y * (x / y).integ()));
+}
+
 Rational Rational::operator-() const { return {-num_, den_}; }
 
 Rational &Rational::operator+=(const Rational &x) {
@@ -95,6 +98,11 @@ Rational &Rational::operator*=(const Rational &x) {
 
 Rational &Rational::operator/=(const Rational &x) {
   *this = *this / x;
+  return *this;
+}
+
+Rational &Rational::operator%=(const Rational &x) {
+  *this = *this % x;
   return *this;
 }
 
@@ -139,6 +147,8 @@ void Rational::convert(double number) {
 }
 
 double Rational::value() const { return static_cast<double>(num_) / den_; }
+
+int Rational::integ() const { return num_ / den_; }
 
 double Rational::fac() const {
   if (num_ < 0 || static_cast<std::size_t>(num_) > FactTable::size ||

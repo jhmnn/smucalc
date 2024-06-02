@@ -114,6 +114,16 @@ TEST(Rational, OperatorDivide) {
   EXPECT_EQ((r1 / r2).value(), 0.25);
 }
 
+TEST(Rational, OperatorMod) {
+  jhmnn::Rational r1(5, 1);
+  jhmnn::Rational r2(7, 2);
+  EXPECT_EQ((r1 % r2).value(), 1.5);
+
+  r1 = {5, 2};
+  r2 = {15, 2};
+  EXPECT_EQ((r1 % r2).value(), 2.5);
+}
+
 TEST(Rational, OperatorNegative) {
   jhmnn::Rational r1(1, 8);
 
@@ -127,6 +137,17 @@ TEST(Rational, Value) {
 
   r1 = {-2, 8};
   EXPECT_EQ(r1.value(), -0.25);
+}
+
+TEST(Rational, Integ) {
+  jhmnn::Rational r1(7, 2);
+  EXPECT_EQ(r1.integ(), 3.0);
+
+  r1 = {-3, 2};
+  EXPECT_EQ(r1.integ(), -1.0);
+
+  r1 = {10, 7};
+  EXPECT_EQ(r1.integ(), 1.0);
 }
 
 TEST(Rational, Fac) {
