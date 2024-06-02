@@ -7,13 +7,7 @@
 namespace jhmnn {
 
 bool is_operand(const Token &t) {
-  switch (t.type) {
-  case Token::Number:
-  case Token::Identifier:
-    return true;
-  default:
-    return false;
-  }
+  return t.type == Token::Number || t.type == Token::Identifier;
 }
 
 bool is_postfix_function(const Token &t) {
@@ -87,27 +81,27 @@ int factorial(int n) {
   return n;
 }
 
-void Calc::calc_function(const Token &t) {
-  const double a = result_.top();
-  result_.pop();
+void Calc::calc_function(const Token & /*t*/) {
+  // const double a = result_.top();
+  // result_.pop();
 
-  switch (t.type) {
-  case Token::Negative:
-    result_.push(-a);
-    Debug::log("-%f\n", a);
-  case Token::Sin:
-    result_.push(std::sin(a));
-    Debug::log("sin(%f)\n", a);
-  case Token::Cos:
-    result_.push(std::cos(a));
-    Debug::log("cos(%f)\n", a);
-  case Token::Tan:
-    result_.push(std::tan(a));
-    Debug::log("tan(%f)\n", a);
-  case Token::Factorial:
-    result_.push(factorial(static_cast<int>(a)));
-    Debug::log("cos(%f)\n", a);
-  }
+  // switch (t.type) {
+  // case Token::Negative:
+  //   result_.push(-a);
+  //   Debug::log("-%f\n", a);
+  // case Token::Sin:
+  //   result_.push(std::sin(a));
+  //   Debug::log("sin(%f)\n", a);
+  // case Token::Cos:
+  //   result_.push(std::cos(a));
+  //   Debug::log("cos(%f)\n", a);
+  // case Token::Tan:
+  //   result_.push(std::tan(a));
+  //   Debug::log("tan(%f)\n", a);
+  // case Token::Factorial:
+  //   result_.push(factorial(static_cast<int>(a)));
+  //   Debug::log("cos(%f)\n", a);
+  // }
 }
 
 void Calc::calc_binary_operation(const Token &t) {

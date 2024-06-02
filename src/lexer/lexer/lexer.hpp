@@ -27,7 +27,7 @@ public:
   };
 
 public:
-  Token() = default;
+  Token() : type(Type::Unknown) {}
   Token(const std::string &text_, Type type_) : text(text_), type(type_) {}
   Token(char text_, Type type_) : type(type_) { text += text_; }
 
