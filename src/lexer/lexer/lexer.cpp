@@ -63,6 +63,31 @@ Token Lexer::make_token_number() {
   return {token, Token::Type::Number};
 }
 
+Token Lexer::make_token_operation() {
+  switch (*it_) {
+  case '+':
+    return {*it_, Token::Type::Plus};
+  case '-':
+    return {*it_, define_minus_type(result_)};
+  case '*':
+    return {*it_, Token::Type::Mul};
+  case '/':
+    return {*it_, Token::Type::Div};
+  case '%':
+    return {*it_, Token::Type::Mod};
+  case '^':
+    return {*it_, Token::Type::Pow};
+  case '!':
+    return {*it_, Token::Type::Factorial};
+  case '(':
+    return {*it_, Token::Type::RegOpen};
+  case ')':
+    return {*it_, Token::Type::RegClose};
+  default:
+    return {*it_, Token::Type::Unknown};
+  }
+}
+
 void Lexer::parse(const std::string &str) {
   result_.clear();
   it_ = str.begin();
@@ -84,38 +109,7 @@ void Lexer::parse(const std::string &str) {
       continue;
     }
 
-    switch (*it_) {
-    case '+':
-      result_.push_back({*it_, Token::Type::Plus});
-      break;
-    case '-':
-      result_.push_back({*it_, define_minus_type(result_)});
-      break;
-    case '*':
-      result_.push_back({*it_, Token::Type::Mul});
-      break;
-    case '/':
-      result_.push_back({*it_, Token::Type::Div});
-      break;
-    case '%':
-      result_.push_back({*it_, Token::Type::Mod});
-      break;
-    case '^':
-      result_.push_back({*it_, Token::Type::Pow});
-      break;
-    case '!':
-      result_.push_back({*it_, Token::Type::Factorial});
-      break;
-    case '(':
-      result_.push_back({*it_, Token::Type::RegOpen});
-      break;
-    case ')':
-      result_.push_back({*it_, Token::Type::RegClose});
-      break;
-    default:
-      result_.push_back({*it_, Token::Type::Unknown});
-      break;
-    }
+    result_.push_back(make_token_operation());
 
     ++it_;
   }

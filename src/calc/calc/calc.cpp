@@ -122,7 +122,7 @@ void Calc::calc_func(const Token &t) {
     Debug::log("fac(%f)\n", a);
     break;
   default:
-    break;
+    throw std::invalid_argument("Unknown function");
   }
 }
 
@@ -158,7 +158,7 @@ void Calc::calc_bin_op(const Token &t) {
     Debug::log("%f ^ %f\n", a.value(), b.value());
     break;
   default:
-    // Check for errors
+    errors_.push_back("Unknown operation");
     break;
   }
 }
@@ -198,6 +198,8 @@ std::vector<Token> expr_to_rpn(Lexer &lexer) {
       }
 
       ops.push(token);
+    } else if (token.type == Token::Type::Unknown) {
+      throw std::invalid_argument("'" + token.text + "' is unknown");
     }
   }
 
@@ -219,9 +221,17 @@ void Calc::calc_expr_rpn(std::vector<Token> &expr_rpn) {
       calc_bin_op(token);
     }
   }
+
+  if (result_.size() > 1) {
+    throw std::runtime_error("Missing operator");
+  }
 }
 
 double Calc::solve(Lexer &lexer) {
+  while (!result_.empty()) {
+    result_.pop();
+  }
+
   Debug::log("expr: ");
   lexer.first();
   while (lexer.more()) {
@@ -241,10 +251,7 @@ double Calc::solve(Lexer &lexer) {
   calc_expr_rpn(expr_rpn);
   Debug::log("result: %f\n", result_.top());
 
-  const auto tmp = result_.top();
-  result_.pop();
-
-  return tmp.value();
+  return result_.top().value();
 }
 
 } // namespace jhmnn

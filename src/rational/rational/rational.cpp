@@ -151,9 +151,16 @@ double Rational::value() const { return static_cast<double>(num_) / den_; }
 int Rational::integ() const { return num_ / den_; }
 
 double Rational::fac() const {
-  if (num_ < 0 || static_cast<std::size_t>(num_) > FactTable::size ||
-      den_ != 1) {
-    throw std::runtime_error("Can't find a factorial");
+  if (num_ < 0) {
+    throw std::runtime_error("Factorial argument is negative");
+  }
+
+  if (static_cast<std::size_t>(num_) > FactTable::size) {
+    throw std::runtime_error("Factorial argument is too big");
+  }
+
+  if (den_ != 1) {
+    throw std::runtime_error("Factorial argument is non-integral");
   }
 
   return static_cast<double>(FactTable().data[num_]);

@@ -52,6 +52,7 @@ public:
 private:
   Token make_token_identifier();
   Token make_token_number();
+  Token make_token_operation();
 
 private:
   std::string::const_iterator it_;
