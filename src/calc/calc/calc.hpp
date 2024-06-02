@@ -5,6 +5,7 @@
 
 #include <stack>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace jhmnn {
@@ -17,10 +18,11 @@ private:
   void calc_expr_rpn(std::vector<Token> &expr_rpn);
   void calc_func(const Token &t);
   void calc_bin_op(const Token &t);
+  void append_operand(const Token &t);
 
 private:
+  std::unordered_map<std::string, Rational> vars_;
   std::stack<Rational> result_;
-  std::vector<std::string> errors_;
 };
 
 } // namespace jhmnn

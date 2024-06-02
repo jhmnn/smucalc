@@ -158,7 +158,7 @@ void Calc::calc_bin_op(const Token &t) {
     Debug::log("%f ^ %f\n", a.value(), b.value());
     break;
   default:
-    errors_.push_back("Unknown operation");
+    throw std::invalid_argument("Unknown operation");
     break;
   }
 }
@@ -211,10 +211,21 @@ std::vector<Token> expr_to_rpn(Lexer &lexer) {
   return out;
 }
 
+void Calc::append_operand(const Token &t) {
+  if (t.type == Token::Type::Number) {
+    result_.push(std::strtod(t.text.c_str(), nullptr));
+  } else {
+    if (vars_.count(t.text) == 0) {
+      throw std::invalid_argument("'" + t.text + "' is undefined");
+    }
+    result_.push(vars_[t.text]);
+  }
+}
+
 void Calc::calc_expr_rpn(std::vector<Token> &expr_rpn) {
   for (auto &token : expr_rpn) {
     if (is_operand(token)) {
-      result_.push(std::strtod(token.text.c_str(), nullptr));
+      append_operand(token);
     } else if (is_func(token)) {
       calc_func(token);
     } else if (is_bin_op(token)) {
