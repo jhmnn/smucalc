@@ -7,12 +7,12 @@
 namespace jhmnn {
 
 bool is_operand(const Token &t) {
-  return t.type == Token::Number || t.type == Token::Identifier;
+  return t.type == Token::Type::Number || t.type == Token::Type::Identifier;
 }
 
 bool is_postfix_function(const Token &t) {
   switch (t.type) {
-  case Token::Factorial:
+  case Token::Type::Factorial:
     return true;
   default:
     return false;
@@ -21,10 +21,10 @@ bool is_postfix_function(const Token &t) {
 
 bool is_prefix_function(const Token &t) {
   switch (t.type) {
-  case Token::Negative:
-  case Token::Sin:
-  case Token::Cos:
-  case Token::Tan:
+  case Token::Type::Negative:
+  case Token::Type::Sin:
+  case Token::Type::Cos:
+  case Token::Type::Tan:
     return true;
   default:
     return false;
@@ -37,12 +37,12 @@ bool is_function(const Token &t) {
 
 bool is_binary_operation(const Token &t) {
   switch (t.type) {
-  case Token::Plus:
-  case Token::Minus:
-  case Token::Mul:
-  case Token::Div:
-  case Token::Mod:
-  case Token::Pow:
+  case Token::Type::Plus:
+  case Token::Type::Minus:
+  case Token::Type::Mul:
+  case Token::Type::Div:
+  case Token::Type::Mod:
+  case Token::Type::Pow:
     return true;
   default:
     return false;
@@ -51,21 +51,21 @@ bool is_binary_operation(const Token &t) {
 
 int operation_priority(const Token &t) {
   switch (t.type) {
-  case Token::RegOpen:
+  case Token::Type::RegOpen:
     return 0;
-  case Token::Plus:
-  case Token::Minus:
+  case Token::Type::Plus:
+  case Token::Type::Minus:
     return 1;
-  case Token::Mul:
-  case Token::Div:
-  case Token::Mod:
+  case Token::Type::Mul:
+  case Token::Type::Div:
+  case Token::Type::Mod:
     return 2;
-  case Token::Pow:
+  case Token::Type::Pow:
     return 3;
-  case Token::Negative:
-  case Token::Sin:
-  case Token::Cos:
-  case Token::Tan:
+  case Token::Type::Negative:
+  case Token::Type::Sin:
+  case Token::Type::Cos:
+  case Token::Type::Tan:
     return 4;
   default:
     return -1;
@@ -86,19 +86,19 @@ void Calc::calc_function(const Token & /*t*/) {
   // result_.pop();
 
   // switch (t.type) {
-  // case Token::Negative:
+  // case Token::Type::Negative:
   //   result_.push(-a);
   //   Debug::log("-%f\n", a);
-  // case Token::Sin:
+  // case Token::Type::Sin:
   //   result_.push(std::sin(a));
   //   Debug::log("sin(%f)\n", a);
-  // case Token::Cos:
+  // case Token::Type::Cos:
   //   result_.push(std::cos(a));
   //   Debug::log("cos(%f)\n", a);
-  // case Token::Tan:
+  // case Token::Type::Tan:
   //   result_.push(std::tan(a));
   //   Debug::log("tan(%f)\n", a);
-  // case Token::Factorial:
+  // case Token::Type::Factorial:
   //   result_.push(factorial(static_cast<int>(a)));
   //   Debug::log("cos(%f)\n", a);
   // }
@@ -111,27 +111,27 @@ void Calc::calc_binary_operation(const Token &t) {
   result_.pop();
 
   switch (t.type) {
-  case Token::Plus:
+  case Token::Type::Plus:
     result_.push(a + b);
     Debug::log("%f + %f\n", a, b);
     break;
 
-  case Token::Minus:
+  case Token::Type::Minus:
     result_.push(a - b);
     Debug::log("%f - %f\n", a, b);
     break;
 
-  case Token::Mul:
+  case Token::Type::Mul:
     result_.push(a * b);
     Debug::log("%f * %f\n", a, b);
     break;
 
-  case Token::Div:
+  case Token::Type::Div:
     result_.push(a / b);
     Debug::log("%f / %f\n", a, b);
     break;
 
-  case Token::Mod:
+  case Token::Type::Mod:
     result_.push(static_cast<int>(a) % static_cast<int>(b));
     Debug::log("%f ^ %f\n", a, b);
     break;
@@ -151,10 +151,12 @@ std::vector<Token> expr_to_rpn(Lexer &lexer) {
     auto token = lexer.next();
     if (is_operand(token) || is_postfix_function(token)) {
       out.push_back(token);
-    } else if (is_prefix_function(token) || token.type == Token::RegOpen) {
+    } else if (
+        is_prefix_function(token) || token.type == Token::Type::RegOpen) {
       operations.push(token);
-    } else if (token.type == Token::RegClose) {
-      while (!operations.empty() && operations.top().type != Token::RegOpen) {
+    } else if (token.type == Token::Type::RegClose) {
+      while (!operations.empty() &&
+             operations.top().type != Token::Type::RegOpen) {
         out.push_back(operations.top());
         operations.pop();
       }

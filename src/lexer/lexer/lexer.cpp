@@ -8,12 +8,12 @@ bool is_identifier(char c) { return std::isalpha(c) || c == '_'; }
 
 Token::Type define_minus_type(const Token &t) {
   switch (t.type) {
-  case Token::Number:
-  case Token::Identifier:
-  case Token::RegClose:
-    return Token::Minus;
+  case Token::Type::Number:
+  case Token::Type::Identifier:
+  case Token::Type::RegClose:
+    return Token::Type::Minus;
   default:
-    return Token::Negative;
+    return Token::Type::Negative;
   }
 }
 
@@ -22,7 +22,7 @@ Token Lexer::make_token_identifier() {
   while (is_identifier(*it_)) {
     token += *it_++;
   }
-  return {token, Token::Identifier};
+  return {token, Token::Type::Identifier};
 }
 
 Token Lexer::make_token_number() {
@@ -57,28 +57,28 @@ void Lexer::parse(const std::string &str) {
 
     switch (*it_) {
     case '+':
-      result_.push_back({*it_, Token::Plus});
+      result_.push_back({*it_, Token::Type::Plus});
       break;
     case '-':
       result_.push_back({*it_, define_minus_type(result_.back())});
       break;
     case '*':
-      result_.push_back({*it_, Token::Mul});
+      result_.push_back({*it_, Token::Type::Mul});
       break;
     case '/':
-      result_.push_back({*it_, Token::Div});
+      result_.push_back({*it_, Token::Type::Div});
       break;
     case '%':
-      result_.push_back({*it_, Token::Mod});
+      result_.push_back({*it_, Token::Type::Mod});
       break;
     case '(':
-      result_.push_back({*it_, Token::RegOpen});
+      result_.push_back({*it_, Token::Type::RegOpen});
       break;
     case ')':
-      result_.push_back({*it_, Token::RegClose});
+      result_.push_back({*it_, Token::Type::RegClose});
       break;
     default:
-      result_.push_back({*it_, Token::Unknown});
+      result_.push_back({*it_, Token::Type::Unknown});
       break;
     }
 
@@ -94,7 +94,7 @@ Token Lexer::next() {
   if (more()) {
     return result_[current_++];
   }
-  return {"", Token::Unknown};
+  return {"", Token::Type::Unknown};
 }
 
 bool Lexer::more() const { return current_ < result_.size(); }

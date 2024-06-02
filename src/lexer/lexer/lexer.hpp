@@ -7,7 +7,7 @@ namespace jhmnn {
 
 struct Token {
 public:
-  enum Type {
+  enum class Type {
     Number,
     Identifier,
     Plus,
