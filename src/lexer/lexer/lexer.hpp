@@ -16,6 +16,7 @@ public:
     Div,
     Mod,
     Pow,
+    Assign,
     Negative,
     Factorial,
     Sqrt,

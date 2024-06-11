@@ -46,6 +46,20 @@ bool is_bin_op(const Token &t) {
   case Token::Type::Div:
   case Token::Type::Mod:
   case Token::Type::Pow:
+  case Token::Type::Assign:
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool is_left_associative(const Token &t) {
+  switch (t.type) {
+  case Token::Type::Plus:
+  case Token::Type::Minus:
+  case Token::Type::Mul:
+  case Token::Type::Div:
+  case Token::Type::Mod:
     return true;
   default:
     return false;
@@ -60,6 +74,7 @@ int op_prior(const Token &t) {
   switch (t.type) {
   case Token::Type::RegOpen:
     return 0;
+  case Token::Type::Assign:
   case Token::Type::Plus:
   case Token::Type::Minus:
     return 1;
@@ -74,11 +89,88 @@ int op_prior(const Token &t) {
   }
 }
 
-bool is_left_associative(const Token & /*t*/) { return false; }
+std::vector<Token> expr_to_rpn(Lexer &lexer) {
+  std::stack<Token> ops;
+  std::vector<Token> out;
+
+  auto top_to_out = [&ops, &out]() {
+    out.push_back(ops.top());
+    ops.pop();
+  };
+
+  lexer.first();
+  while (lexer.more()) {
+    auto t = lexer.next();
+    if (is_operand(t) || is_post_func(t)) {
+      out.push_back(t);
+    } else if (is_pref_func(t) || t.type == Token::Type::RegOpen) {
+      ops.push(t);
+    } else if (t.type == Token::Type::RegClose) {
+      while (!ops.empty() && ops.top().type != Token::Type::RegOpen) {
+        top_to_out();
+      }
+
+      ops.pop();
+      if (!ops.empty() && is_pref_func(ops.top())) {
+        top_to_out();
+      }
+    } else if (is_bin_op(t)) {
+      while (!ops.empty()) {
+        auto &top = ops.top();
+        if (is_pref_func(top) ||
+            (is_left_associative(top) && op_prior(top) >= op_prior(t))) {
+          top_to_out();
+        } else {
+          break;
+        }
+      }
+      ops.push(t);
+    } else if (t.type == Token::Type::Unknown) {
+      throw std::logic_error("'" + t.text + "' is unknown");
+    }
+  }
+
+  while (!ops.empty()) {
+    top_to_out();
+  }
+
+  return out;
+}
+
+Calc::Operand Calc::result_pop_l() {
+  if (result_.empty()) {
+    throw std::logic_error("Missing expression");
+  }
+
+  auto tmp = result_.top();
+  result_.pop();
+  if (tmp.type() == Token::Type::Number) {
+    throw std::logic_error("Illegal assignment");
+  }
+
+  return tmp;
+}
+
+Calc::Operand Calc::result_pop_r() {
+  if (result_.empty()) {
+    throw std::logic_error("Missing expression");
+  }
+
+  auto tmp = result_.top();
+  result_.pop();
+  if (tmp.type() == Token::Type::Number) {
+    return tmp;
+  }
+
+  try {
+    return Operand(vars_.at(tmp.name()));
+  } catch (const std::exception &e) {
+    throw std::logic_error("'" + tmp.name() + "' is undefined");
+  }
+}
 
 void Calc::calc_func(const Token &t) {
-  const auto a = result_.top();
-  result_.pop();
+  const Rational &a = result_pop_r().value();
 
   switch (t.type) {
   case Token::Type::Negative:
@@ -122,15 +214,13 @@ void Calc::calc_func(const Token &t) {
     Debug::log("fac(%f)\n", a);
     break;
   default:
-    throw std::invalid_argument("Unknown function");
+    throw std::logic_error("Unknown function");
   }
 }
 
 void Calc::calc_bin_op(const Token &t) {
-  const auto b = result_.top();
-  result_.pop();
-  const auto a = result_.top();
-  result_.pop();
+  const Rational &b = result_pop_r().value();
+  const Rational &a = result_pop_r().value();
 
   switch (t.type) {
   case Token::Type::Plus:
@@ -158,83 +248,39 @@ void Calc::calc_bin_op(const Token &t) {
     Debug::log("%f ^ %f\n", a.value(), b.value());
     break;
   default:
-    throw std::invalid_argument("Unknown operation");
+    throw std::logic_error("Unknown operation");
     break;
   }
 }
 
-std::vector<Token> expr_to_rpn(Lexer &lexer) {
-  std::stack<Token> ops;
-  std::vector<Token> out;
-
-  lexer.first();
-  while (lexer.more()) {
-    auto token = lexer.next();
-    if (is_operand(token) || is_post_func(token)) {
-      out.push_back(token);
-    } else if (is_pref_func(token) || token.type == Token::Type::RegOpen) {
-      ops.push(token);
-    } else if (token.type == Token::Type::RegClose) {
-      while (!ops.empty() && ops.top().type != Token::Type::RegOpen) {
-        out.push_back(ops.top());
-        ops.pop();
-      }
-      ops.pop();
-      if (!ops.empty()) {
-        if (is_func(ops.top())) {
-          out.push_back(ops.top());
-          ops.pop();
-        }
-      }
-    } else if (is_bin_op(token)) {
-      while (!ops.empty()) {
-        auto &top = ops.top();
-        if (op_prior(top) >= op_prior(token)) {
-          out.push_back(top);
-          ops.pop();
-        } else {
-          break;
-        }
-      }
-
-      ops.push(token);
-    } else if (token.type == Token::Type::Unknown) {
-      throw std::invalid_argument("'" + token.text + "' is unknown");
-    }
-  }
-
-  while (!ops.empty()) {
-    out.push_back(ops.top());
-    ops.pop();
-  }
-
-  return out;
-}
-
-void Calc::append_operand(const Token &t) {
-  if (t.type == Token::Type::Number) {
-    result_.push(std::strtod(t.text.c_str(), nullptr));
-  } else {
-    if (vars_.count(t.text) == 0) {
-      throw std::invalid_argument("'" + t.text + "' is undefined");
-    }
-    result_.push(vars_[t.text]);
-  }
+void Calc::assign() {
+  const Operand &r = result_pop_r();
+  const Operand &l = result_pop_l();
+  vars_[l.name()] = r.value();
+  result_.push(l);
 }
 
 void Calc::calc_expr_rpn(std::vector<Token> &expr_rpn) {
-  for (auto &token : expr_rpn) {
-    if (is_operand(token)) {
-      append_operand(token);
-    } else if (is_func(token)) {
-      calc_func(token);
-    } else if (is_bin_op(token)) {
-      calc_bin_op(token);
+  for (auto &t : expr_rpn) {
+    if (t.type == Token::Type::Number) {
+      result_.push(std::strtod(t.text.c_str(), nullptr));
+    } else if (t.type == Token::Type::Identifier) {
+      result_.push(t.text);
+    } else if (t.type == Token::Type::Assign) {
+      assign();
+    } else if (is_func(t)) {
+      calc_func(t);
+    } else if (is_bin_op(t)) {
+      calc_bin_op(t);
     }
   }
 
   if (result_.size() > 1) {
-    throw std::runtime_error("Missing operator");
+    throw std::logic_error("Missing operator");
+  }
+
+  if (result_.top().type() == Token::Type::Identifier) {
+    result_.push(result_pop_r());
   }
 }
 
@@ -260,9 +306,9 @@ double Calc::solve(Lexer &lexer) {
   Debug::log("\n");
 
   calc_expr_rpn(expr_rpn);
-  Debug::log("result: %f\n", result_.top());
 
-  return result_.top().value();
+  Debug::log("result: %f\n", result_.top().value().value());
+  return result_pop_r().value().value();
 }
 
 } // namespace jhmnn

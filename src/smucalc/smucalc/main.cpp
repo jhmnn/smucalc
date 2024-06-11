@@ -17,13 +17,15 @@ int main() {
   while (true) {
     if (wrl.input()) {
       lexer.parse(buffer);
-      try {
-        std::cout << "> " << calc.solve(lexer) << '\n';
-      } catch (const std::exception &e) {
-        std::cout << e.what() << '\n';
-      }
-      if (buffer == "exit") {
-        break;
+      if (!buffer.empty()) {
+        try {
+          std::cout << "> " << calc.solve(lexer) << '\n';
+        } catch (const std::exception &e) {
+          std::cout << e.what() << '\n';
+        }
+        if (buffer == "exit") {
+          break;
+        }
       }
     }
   }

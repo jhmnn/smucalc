@@ -77,6 +77,8 @@ Token Lexer::make_token_operation() {
     return {*it_, Token::Type::Mod};
   case '^':
     return {*it_, Token::Type::Pow};
+  case '=':
+    return {*it_, Token::Type::Assign};
   case '!':
     return {*it_, Token::Type::Factorial};
   case '(':
