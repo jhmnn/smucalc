@@ -90,6 +90,8 @@ int op_prior(const Token &t) {
 }
 
 std::vector<Token> expr_to_rpn(Lexer &lexer) {
+  std::size_t reg_par_level = 0;
+
   std::stack<Token> ops;
   std::vector<Token> out;
 
@@ -105,9 +107,19 @@ std::vector<Token> expr_to_rpn(Lexer &lexer) {
       out.push_back(t);
     } else if (is_pref_func(t) || t.type == Token::Type::RegOpen) {
       ops.push(t);
+      --reg_par_level;
     } else if (t.type == Token::Type::RegClose) {
-      while (!ops.empty() && ops.top().type != Token::Type::RegOpen) {
+      while (true) {
+        if (ops.empty()) {
+          throw std::logic_error("Missing opening parenthesis");
+        }
+
+        if (ops.top().type == Token::Type::RegOpen) {
+          break;
+        }
+
         top_to_out();
+        --reg_par_level;
       }
 
       ops.pop();
@@ -132,6 +144,10 @@ std::vector<Token> expr_to_rpn(Lexer &lexer) {
 
   while (!ops.empty()) {
     top_to_out();
+  }
+
+  if (reg_par_level > 0) {
+    throw std::logic_error("Missing closing parenthesis");
   }
 
   return out;
