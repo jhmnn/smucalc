@@ -18,11 +18,11 @@ void change_if_function(Token &t) {
     t.type = Token::Type::Tan;
   } else if (s == "cot") {
     t.type = Token::Type::Cot;
-  } else if (s == "ln") {
-    t.type = Token::Type::Log;
   } else if (s == "log") {
+    t.type = Token::Type::Log;
+  } else if (s == "log2") {
     t.type = Token::Type::Log2;
-  } else if (s == "lg") {
+  } else if (s == "log10") {
     t.type = Token::Type::Log10;
   }
 }
@@ -44,7 +44,7 @@ Token::Type define_minus_type(const std::vector<Token> &v) {
 
 Token Lexer::make_token_identifier() {
   std::string token;
-  while (is_identifier(*it_)) {
+  while (is_identifier(*it_) || std::isdigit(*it_)) {
     token += *it_++;
   }
 
