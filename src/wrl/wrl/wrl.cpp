@@ -4,14 +4,30 @@
 
 namespace jhmnn {
 
-Wrl::Wrl(std::string &buffer) : buffer_(buffer) {}
+Wrl::Wrl(std::string &buffer) : buffer_(buffer), cur_pos_(buffer.size()) {}
 Wrl::Wrl(std::string &buffer, const std::string &prefix)
-    : prefix_(prefix), buffer_(buffer) {}
+    : prefix_(prefix), buffer_(buffer), cur_pos_(buffer.size()) {}
 Wrl::~Wrl() { finalize(); }
 
 void Wrl::init() { tic_.init(); }
 
 void Wrl::finalize() { tic_.finalize(); }
+
+void Wrl::cur_left() {
+  if (cur_pos_ > 0) {
+    tic_.cur_set_x(--cur_pos_);
+  }
+}
+
+void Wrl::cur_right() {
+  if (cur_pos_ < buffer_.size()) {
+    tic_.cur_set_x(++cur_pos_);
+  }
+}
+
+void Wrl::cur_begin() { tic_.cur_set_x(cur_pos_ = 0); }
+
+void Wrl::cur_end() { tic_.cur_set_x(cur_pos_ = buffer_.size()); }
 
 void Wrl::write(const std::string &text) { tic_.print(text); }
 
@@ -32,25 +48,29 @@ bool Wrl::input(const std::string &prefix) {
     is_inputing = true;
   }
 
-  const char c = tic_.get_char();
-  if (c < 0) {
-    return false;
+  const std::string s = tic_.read();
+
+  if (s.substr(0, 3) == "\033[D") {
+    cur_left();
+  } else if (s.substr(0, 3) == "\033[C") {
+    cur_right();
+  } else if (s[0] == 127) {
+    if (cur_pos_ > 0) {
+      buffer_.erase(--cur_pos_, 1);
+    }
+  } else if (s[0] == '\n') {
+    is_inputing = false;
+  } else if (s[0] != '\033') {
+    buffer_.insert(buffer_.begin() + cur_pos_++, s[0]);
   }
 
-  if (c == 127) {
-    if (!buffer_.empty()) {
-      buffer_.pop_back();
-      tic_.back();
-    }
-  } else if (c == '\n') {
-    is_inputing = false;
-  } else {
-    buffer_.push_back(c);
-    tic_.put_char(c);
-  }
+  tic_.clear_line();
+  writep(prefix, " " + buffer_);
+  tic_.cur_set_x(cur_pos_ + prefix_.size() + 2);
 
   if (!is_inputing) {
     write("\n");
+    cur_begin();
   }
 
   return !is_inputing;

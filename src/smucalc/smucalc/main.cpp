@@ -16,15 +16,16 @@ int main() {
   jhmnn::Calc calc;
   while (true) {
     if (wrl.input()) {
+      if (buffer == "exit") {
+        break;
+      }
+
       lexer.parse(buffer);
       if (!buffer.empty()) {
         try {
           std::cout << "> " << calc.solve(lexer) << '\n';
         } catch (const std::exception &e) {
           std::cout << e.what() << '\n';
-        }
-        if (buffer == "exit") {
-          break;
         }
       }
     }
