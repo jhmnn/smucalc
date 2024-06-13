@@ -36,29 +36,36 @@ int main() {
       }
 
       if (buffer == "exit") {
+        wrl.write("\n");
         break;
       }
 
       delete_spaces(buffer);
       if (calc.is_correct()) {
+        wrl.set_fg_color(jhmnn::Color::Blue);
         wrl.writef(" = %.15g", result);
         calc.save_vars();
       } else {
+        wrl.set_fg_color(jhmnn::Color::Red);
         wrl.writef(" - %s", error.c_str());
         error.clear();
       }
+      wrl.reset_color();
       wrl.write("\n");
     } else {
       lexer.parse(buffer);
       if (!buffer.empty() && !is_spaces_only(buffer)) {
         try {
           result = calc.solve(lexer);
+          wrl.set_fg_color(jhmnn::Color::Green);
           wrl.writef("    (V) = %.15g", result);
         } catch (const std::exception &e) {
           error = e.what();
+          wrl.set_fg_color(jhmnn::Color::Red);
           wrl.writef("    (X) - %s", error.c_str());
         }
       }
+      wrl.reset_color();
     }
   }
 

@@ -12,7 +12,6 @@ Tic::Tic() { read_buf_.resize(8, '\0'); }
 
 void Tic::init() {
   // std::printf("\033[?25l");
-
   tcgetattr(0, &term_attrs_);
 
   termios tattr{};
@@ -34,36 +33,40 @@ void Tic::finalize() {
 }
 
 void Tic::clear_line() const {
-  std::printf("\033[0G");
+  printf("\033[0G");
   char const clear_code[] = "\033[2K";
   static_cast<void>(::write(1, clear_code, sizeof(clear_code) - 1) >= 0);
 }
 
 void Tic::back() const { print("\b \b"); }
 
-void Tic::cur_move_x(int offset) {
+void Tic::cur_move_x(int offset) const {
   if (offset < 0) {
-    std::printf("\033[%dD", -offset);
+    printf("\033[%dD", -offset);
   } else {
-    std::printf("\033[%dC", offset);
+    printf("\033[%dC", offset);
   }
-
-  static_cast<void>(std::fflush(stdout));
 }
 
-void Tic::cur_set_x(std::size_t x) {
-  std::printf("\033[%lu`", x);
-  static_cast<void>(std::fflush(stdout));
-}
+void Tic::cur_set_x(std::size_t x) const { printf("\033[%luG", x); }
 
 void Tic::cur_save() const { print("\033[s"); }
 
 void Tic::cur_load() const { print("\033[u"); }
 
-void Tic::print(const std::string &s) const {
-  std::printf("%s", s.c_str());
-  static_cast<void>(std::fflush(stdout));
+void Tic::set_bg_color(Color color) const {
+  const int n = 40 + static_cast<int>(color);
+  printf("\033[%dm", n);
 }
+
+void Tic::set_fg_color(Color color) const {
+  const int n = 30 + static_cast<int>(color);
+  printf("\033[0;%dm", n);
+}
+
+void Tic::reset_color() const { printf("\033[0m"); }
+
+void Tic::print(const std::string &s) const { printf("%s", s.c_str()); }
 
 void Tic::printf(const char *format, ...) const {
   va_list args;
@@ -73,10 +76,7 @@ void Tic::printf(const char *format, ...) const {
   static_cast<void>(std::fflush(stdout));
 }
 
-void Tic::put_char(char c) const {
-  std::putchar(c);
-  static_cast<void>(std::fflush(stdout));
-}
+void Tic::put_char(char c) const { printf("%c", c); }
 
 int Tic::get_char() {
   const int n = ::read(0, read_buf_.data(), read_buf_.size() - 1);

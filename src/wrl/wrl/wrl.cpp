@@ -30,6 +30,12 @@ void Wrl::cur_begin() { tic_.cur_set_x(cur_pos_ = 0); }
 
 void Wrl::cur_end() { tic_.cur_set_x(cur_pos_ = buffer_.size()); }
 
+void Wrl::set_bg_color(Color color) const { tic_.set_bg_color(color); }
+
+void Wrl::set_fg_color(Color color) const { tic_.set_fg_color(color); }
+
+void Wrl::reset_color() const { tic_.reset_color(); }
+
 void Wrl::write(const std::string &text) { tic_.print(text); }
 
 void Wrl::writel(const std::string &text) {
@@ -57,6 +63,7 @@ void Wrl::writef(const char *format, ...) {
   std::vprintf(format, args);
   va_end(args);
   tic_.cur_load();
+  static_cast<void>(std::fflush(stdout));
 }
 
 bool Wrl::input(const std::string &prefix) {
