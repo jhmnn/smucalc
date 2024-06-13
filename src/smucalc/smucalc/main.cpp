@@ -19,8 +19,7 @@ bool is_spaces_only(const std::string &s) {
 int main() {
   jhmnn::Debug::init();
 
-  std::string buffer;
-  jhmnn::Wrl wrl(buffer, ":");
+  jhmnn::Wrl wrl(": ");
   wrl.init();
 
   jhmnn::Lexer lexer;
@@ -29,7 +28,9 @@ int main() {
   std::string error;
 
   while (true) {
-    if (wrl.input()) {
+    const bool is_line_typed = wrl.input();
+    auto &buffer = wrl.buffer();
+    if (is_line_typed) {
       if (buffer.empty() || is_spaces_only(buffer)) {
         wrl.write("\n");
         continue;
@@ -40,7 +41,7 @@ int main() {
         break;
       }
 
-      delete_spaces(buffer);
+      // delete_spaces(buffer);
       if (calc.is_correct()) {
         wrl.set_fg_color(jhmnn::Color::Blue);
         wrl.writef(" = %.15g", result);

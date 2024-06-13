@@ -1,5 +1,6 @@
 #pragma once
 
+#include <wrl/history.hpp>
 #include <wrl/tic.hpp>
 
 #include <string>
@@ -8,8 +9,8 @@ namespace jhmnn {
 
 class Wrl {
 public:
-  Wrl(std::string &buffer);
-  Wrl(std::string &buffer, const std::string &prefix);
+  Wrl();
+  Wrl(const std::string &prefix);
   ~Wrl();
 
   void init();
@@ -32,15 +33,22 @@ public:
   bool input(const std::string &prefix);
   bool input();
 
+  std::string &buffer();
+
 private:
-  Tic tic_{};
+  void set_curr_buffer(std::string *s);
+
+private:
+  Tic tic_;
+  History hist_;
 
   std::string prefix_;
-  std::string &buffer_;
+
+  std::string *buffer_;
 
   std::size_t cur_pos_;
 
-  bool is_inputing = false;
+  bool is_inputting = false;
 };
 
 } // namespace jhmnn
