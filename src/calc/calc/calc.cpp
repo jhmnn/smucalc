@@ -105,9 +105,11 @@ std::vector<Token> expr_to_rpn(Lexer &lexer) {
     auto t = lexer.next();
     if (is_operand(t) || is_post_func(t)) {
       out.push_back(t);
-    } else if (is_pref_func(t) || t.type == Token::Type::RegOpen) {
+    } else if (is_pref_func(t)) {
       ops.push(t);
-      --reg_par_level;
+    } else if (t.type == Token::Type::RegOpen) {
+      ops.push(t);
+      ++reg_par_level;
     } else if (t.type == Token::Type::RegClose) {
       while (true) {
         if (ops.empty()) {
@@ -119,9 +121,9 @@ std::vector<Token> expr_to_rpn(Lexer &lexer) {
         }
 
         top_to_out();
-        --reg_par_level;
       }
 
+      --reg_par_level;
       ops.pop();
       if (!ops.empty() && is_pref_func(ops.top())) {
         top_to_out();
@@ -179,9 +181,13 @@ Calc::Operand Calc::result_pop_r() {
   }
 
   try {
-    return Operand(vars_.at(tmp.name()));
+    return Operand(tmp_vars_.at(tmp.name()));
   } catch (const std::exception &e) {
-    throw std::logic_error("'" + tmp.name() + "' is undefined");
+    try {
+      return Operand(vars_.at(tmp.name()));
+    } catch (const std::exception &e) {
+      throw std::logic_error("'" + tmp.name() + "' is undefined");
+    }
   }
 }
 
@@ -272,7 +278,7 @@ void Calc::calc_bin_op(const Token &t) {
 void Calc::assign() {
   const Operand &r = result_pop_r();
   const Operand &l = result_pop_l();
-  vars_[l.name()] = r.value();
+  tmp_vars_[l.name()] = r.value();
   result_.push(l);
 }
 
@@ -301,6 +307,8 @@ void Calc::calc_expr_rpn(std::vector<Token> &expr_rpn) {
 }
 
 double Calc::solve(Lexer &lexer) {
+  is_correct_ = false;
+  tmp_vars_ = vars_;
   while (!result_.empty()) {
     result_.pop();
   }
@@ -314,6 +322,9 @@ double Calc::solve(Lexer &lexer) {
   Debug::log("\n");
 
   auto expr_rpn = expr_to_rpn(lexer);
+  if (expr_rpn.empty()) {
+    return 0;
+  }
 
   Debug::log("expr rpn: ");
   for (const auto &i : expr_rpn) {
@@ -322,9 +333,14 @@ double Calc::solve(Lexer &lexer) {
   Debug::log("\n");
 
   calc_expr_rpn(expr_rpn);
+  is_correct_ = true;
 
   Debug::log("result: %f\n", result_.top().value().value());
   return result_pop_r().value().value();
 }
+
+void Calc::save_vars() { vars_ = tmp_vars_; }
+
+bool Calc::is_correct() const { return is_correct_; }
 
 } // namespace jhmnn

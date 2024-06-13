@@ -13,6 +13,8 @@ namespace jhmnn {
 class Calc {
 public:
   double solve(Lexer &lexer);
+  void save_vars();
+  bool is_correct() const;
 
 private:
   struct Operand {
@@ -46,8 +48,11 @@ private:
 
 private:
   std::unordered_map<std::string, Rational> vars_;
+  std::unordered_map<std::string, Rational> tmp_vars_;
 
   std::stack<Operand> result_;
+
+  bool is_correct_ = false;
 };
 
 } // namespace jhmnn

@@ -1,5 +1,6 @@
 #include <wrl/tic.hpp>
 
+#include <cstdarg>
 #include <cstdio>
 #include <cstring>
 
@@ -55,8 +56,20 @@ void Tic::cur_set_x(std::size_t x) {
   static_cast<void>(std::fflush(stdout));
 }
 
+void Tic::cur_save() const { print("\033[s"); }
+
+void Tic::cur_load() const { print("\033[u"); }
+
 void Tic::print(const std::string &s) const {
   std::printf("%s", s.c_str());
+  static_cast<void>(std::fflush(stdout));
+}
+
+void Tic::printf(const char *format, ...) const {
+  va_list args;
+  va_start(args, format);
+  std::vprintf(format, args);
+  va_end(args);
   static_cast<void>(std::fflush(stdout));
 }
 

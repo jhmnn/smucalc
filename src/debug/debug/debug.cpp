@@ -7,6 +7,11 @@ namespace jhmnn {
 
 bool Debug::is_debug = true;
 
+void Debug::init() {
+  std::FILE *out = std::fopen("log.txt", "w");
+  static_cast<void>(std::fclose(out));
+}
+
 void Debug::log(const char *format, ...) {
   if (!is_debug) {
     return;
@@ -17,11 +22,6 @@ void Debug::log(const char *format, ...) {
   va_start(args, format);
   static_cast<void>(std::vfprintf(out, format, args));
   va_end(args);
-  static_cast<void>(std::fclose(out));
-}
-
-void Debug::clear() {
-  std::FILE *out = std::fopen("log.txt", "w");
   static_cast<void>(std::fclose(out));
 }
 

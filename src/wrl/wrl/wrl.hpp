@@ -24,6 +24,8 @@ public:
   void write(const std::string &text);
   void writel(const std::string &text);
   void writep(const std::string &text, const std::string &postfix);
+  void writee(const std::string &text);
+  void writef(const char *format, ...);
   bool input(const std::string &prefix);
   bool input();
 

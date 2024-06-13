@@ -1,5 +1,6 @@
 #include <wrl/wrl.hpp>
 
+#include <cstdarg>
 #include <cstdio>
 
 namespace jhmnn {
@@ -41,6 +42,23 @@ void Wrl::writep(const std::string &text, const std::string &postfix) {
   tic_.print(postfix);
 }
 
+void Wrl::writee(const std::string &text) {
+  tic_.cur_save();
+  tic_.cur_set_x(buffer_.size() + prefix_.size() + 2);
+  tic_.print(text);
+  tic_.cur_load();
+}
+
+void Wrl::writef(const char *format, ...) {
+  tic_.cur_save();
+  tic_.cur_set_x(buffer_.size() + prefix_.size() + 2);
+  va_list args;
+  va_start(args, format);
+  std::vprintf(format, args);
+  va_end(args);
+  tic_.cur_load();
+}
+
 bool Wrl::input(const std::string &prefix) {
   if (!is_inputing) {
     buffer_.clear();
@@ -48,6 +66,7 @@ bool Wrl::input(const std::string &prefix) {
     is_inputing = true;
   }
 
+  tic_.cur_set_x(cur_pos_ + prefix_.size() + 2);
   const std::string s = tic_.read();
 
   if (s.substr(0, 3) == "\033[D") {
@@ -69,7 +88,6 @@ bool Wrl::input(const std::string &prefix) {
   tic_.cur_set_x(cur_pos_ + prefix_.size() + 2);
 
   if (!is_inputing) {
-    write("\n");
     cur_begin();
   }
 
