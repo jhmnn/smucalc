@@ -1,22 +1,23 @@
-set(target_name smucalc)
+set(target_name calc)
 
-add_executable(${target_name})
+add_library(${target_name} STATIC
+  calc/calc.hpp
+  calc/calc.cpp
+)
 
 include(CompileOptions)
 set_compile_options(${target_name})
 
-target_sources(
+target_include_directories(
   ${target_name}
-  PRIVATE
-    smucalc/main.cpp
+  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/
 )
 
 target_link_libraries(
   ${target_name}
   PRIVATE
     rational
-    wrl
     lexer
-    calc
     ldebug
 )

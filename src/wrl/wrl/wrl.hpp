@@ -7,7 +7,6 @@
 namespace jhmnn {
 
 class Wrl {
-
 public:
   Wrl(std::string &buffer);
   Wrl(std::string &buffer, const std::string &prefix);
@@ -16,9 +15,20 @@ public:
   void init();
   void finalize();
 
+  void cur_left();
+  void cur_right();
+  void cur_begin();
+  void cur_end();
+
+  void set_bg_color(Color color) const;
+  void set_fg_color(Color color) const;
+  void reset_color() const;
+
   void write(const std::string &text);
   void writel(const std::string &text);
   void writep(const std::string &text, const std::string &postfix);
+  void writee(const std::string &text);
+  void writef(const char *format, ...);
   bool input(const std::string &prefix);
   bool input();
 
@@ -27,6 +37,8 @@ private:
 
   std::string prefix_;
   std::string &buffer_;
+
+  std::size_t cur_pos_;
 
   bool is_inputing = false;
 };

@@ -7,22 +7,33 @@ namespace jhmnn {
 
 struct Token {
 public:
-  enum Type {
-    Int,
-    Float,
+  enum class Type {
+    Number,
     Identifier,
     Plus,
     Minus,
     Mul,
     Div,
     Mod,
+    Pow,
+    Assign,
+    Negative,
+    Factorial,
+    Sqrt,
+    Sin,
+    Cos,
+    Tan,
+    Cot,
+    Log,
+    Log2,
+    Log10,
     RegOpen,
     RegClose,
     Unknown
   };
 
 public:
-  Token() = default;
+  Token() : type(Type::Unknown) {}
   Token(const std::string &text_, Type type_) : text(text_), type(type_) {}
   Token(char text_, Type type_) : type(type_) { text += text_; }
 
@@ -42,6 +53,7 @@ public:
 private:
   Token make_token_identifier();
   Token make_token_number();
+  Token make_token_operation();
 
 private:
   std::string::const_iterator it_;

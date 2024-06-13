@@ -58,9 +58,18 @@ Checks: >
   -readability-implicit-bool-conversion,
   -abseil-string-find-str-contains,
   -hicpp-use-emplace,
-  -modernize-use-emplace
+  -modernize-use-emplace,
+  -readability-simplify-boolean-expr,
+  -cert-dcl50-cpp,
+  -android-cloexec-fopen,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -readability-function-cognitive-complexity,
+  -performance-unnecessary-copy-initialization,
+  -cppcoreguidelines-special-member-functions,
+  -hicpp-special-member-functions,
+  -cppcoreguidelines-pro-bounds-constant-array-index
 WarningsAsErrors: '*'
-HeaderFilterRegex: '(libmsv)/'
+HeaderFilterRegex: '(calc|deug|lexer|rational|smucalc|wrl)/'
 AnalyzeTemporaryDtors: false
 FormatStyle:     none
 User:            jhmnn

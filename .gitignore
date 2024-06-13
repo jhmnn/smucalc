@@ -1,3 +1,4 @@
 build
 *.sh
 .clang-format
+log.txt
