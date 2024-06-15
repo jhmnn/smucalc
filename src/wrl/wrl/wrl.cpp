@@ -108,7 +108,6 @@ bool Wrl::input(const std::string &prefix) {
   tic_.cur_set_x(prefix.size() + cur_pos_ + 1);
 
   if (!is_inputting) {
-    // TODO: fix seg fault error
     hist_.append(*buffer_);
     buffer_ = hist_.prev();
     cur_begin();
