@@ -67,7 +67,8 @@ Checks: >
   -performance-unnecessary-copy-initialization,
   -cppcoreguidelines-special-member-functions,
   -hicpp-special-member-functions,
-  -cppcoreguidelines-pro-bounds-constant-array-index
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -google-readability-todo
 WarningsAsErrors: '*'
 HeaderFilterRegex: '(calc|deug|lexer|rational|smucalc|wrl)/'
 AnalyzeTemporaryDtors: false
