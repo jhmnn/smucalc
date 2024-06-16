@@ -1,15 +1,10 @@
 #include <calc/calc.hpp>
-#include <debug/debug.hpp>
 #include <lexer/lexer.hpp>
 #include <wrl/wrl.hpp>
 
 #include <iostream>
 
-
-
 int main() {
-  jhmnn::Debug::init();
-
   jhmnn::Wrl wrl(": ");
   wrl.init();
 
