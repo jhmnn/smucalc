@@ -36,7 +36,7 @@ public:
   std::string &buffer();
 
 private:
-  void set_curr_buffer(std::string *s);
+  void new_line();
 
 private:
   Tic tic_;

@@ -5,6 +5,10 @@
 
 namespace jhmnn {
 
+bool is_spaces_only(const std::string &s) {
+  return s.find_first_not_of(' ') == std::string::npos;
+}
+
 Wrl::Wrl()
     : hist_("./res/history"), buffer_(hist_.next()), cur_pos_(buffer_->size()) {
 }
@@ -97,7 +101,17 @@ bool Wrl::input(const std::string &prefix) {
       buffer_->erase(--cur_pos_, 1);
     }
   } else if (s[0] == '\n') {
-    is_inputting = false;
+    if (!buffer_->empty()) {
+      if (is_spaces_only(*buffer_)) {
+        tic_.clear_line();
+        write(prefix);
+        new_line();
+      } else {
+        is_inputting = false;
+      }
+    } else {
+      write("\n");
+    }
   } else if (s[0] != '\033') {
     hist_.start_edit_curr_entry();
     buffer_->insert(buffer_->begin() + cur_pos_++, s[0]);
@@ -119,5 +133,11 @@ bool Wrl::input(const std::string &prefix) {
 bool Wrl::input() { return input(prefix_); }
 
 std::string &Wrl::buffer() { return *buffer_; }
+
+void Wrl::new_line() {
+  buffer_->clear();
+  cur_begin();
+  write("\n");
+}
 
 } // namespace jhmnn

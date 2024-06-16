@@ -93,6 +93,7 @@ Token Lexer::make_token_operation() {
 void Lexer::parse(const std::string &str) {
   result_.clear();
   it_ = str.begin();
+  current_ = 0;
 
   while (it_ != str.end()) {
     while (isspace(*it_)) {
@@ -115,8 +116,6 @@ void Lexer::parse(const std::string &str) {
 
     ++it_;
   }
-
-  current_ = 0;
 }
 
 void Lexer::first() { current_ = 0; }

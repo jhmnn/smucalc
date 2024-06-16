@@ -5,16 +5,7 @@
 
 #include <iostream>
 
-void delete_spaces(std::string &s) {
-  const auto begin = s.begin() + s.find_first_not_of(' ');
-  const auto end = s.begin() + s.find_last_not_of(' ');
-  s.erase(end + 1, s.end());
-  s.erase(s.begin(), begin);
-}
 
-bool is_spaces_only(const std::string &s) {
-  return s.find_first_not_of(' ') == std::string::npos;
-}
 
 int main() {
   jhmnn::Debug::init();
@@ -31,17 +22,11 @@ int main() {
     const bool is_line_typed = wrl.input();
     auto &buffer = wrl.buffer();
     if (is_line_typed) {
-      if (buffer.empty() || is_spaces_only(buffer)) {
-        wrl.write("\n");
-        continue;
-      }
-
       if (buffer == "exit") {
         wrl.write("\n");
         break;
       }
 
-      // delete_spaces(buffer);
       if (calc.is_correct()) {
         wrl.set_fg_color(jhmnn::Color::Blue);
         wrl.writef(" = %.15g", result);
@@ -51,11 +36,13 @@ int main() {
         wrl.writef(" - %s", error.c_str());
         error.clear();
       }
+
       wrl.reset_color();
       wrl.write("\n");
     } else {
       lexer.parse(buffer);
-      if (!buffer.empty() && !is_spaces_only(buffer)) {
+
+      if (!buffer.empty() && lexer.more()) {
         try {
           result = calc.solve(lexer);
           wrl.set_fg_color(jhmnn::Color::Green);
@@ -66,6 +53,7 @@ int main() {
           wrl.writef("    (X) - %s", error.c_str());
         }
       }
+
       wrl.reset_color();
     }
   }
