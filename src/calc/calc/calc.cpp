@@ -197,43 +197,33 @@ void Calc::calc_func(const Token &t) {
   switch (t.type) {
   case Token::Type::Negative:
     result_.push(-a);
-    Debug::log("-%f\n", a);
     break;
   case Token::Type::Sqrt:
     result_.push(a.sqrt());
-    Debug::log("sqrt(%f)\n", a);
     break;
   case Token::Type::Sin:
     result_.push(a.sin());
-    Debug::log("sin(%f)\n", a);
     break;
   case Token::Type::Cos:
     result_.push(a.cos());
-    Debug::log("cos(%f)\n", a);
     break;
   case Token::Type::Tan:
     result_.push(a.tan());
-    Debug::log("tan(%f)\n", a);
     break;
   case Token::Type::Cot:
     result_.push(a.cot());
-    Debug::log("cot(%f)\n", a);
     break;
   case Token::Type::Log:
     result_.push(a.log());
-    Debug::log("log(%f)\n", a);
     break;
   case Token::Type::Log2:
     result_.push(a.log2());
-    Debug::log("log2(%f)\n", a);
     break;
   case Token::Type::Log10:
     result_.push(a.log10());
-    Debug::log("log10(%f)\n", a);
     break;
   case Token::Type::Factorial:
     result_.push(a.fac());
-    Debug::log("fac(%f)\n", a);
     break;
   default:
     throw std::logic_error("Unknown function");
@@ -247,27 +237,21 @@ void Calc::calc_bin_op(const Token &t) {
   switch (t.type) {
   case Token::Type::Plus:
     result_.push(a + b);
-    Debug::log("%f + %f\n", a.value(), b.value());
     break;
   case Token::Type::Minus:
     result_.push(a - b);
-    Debug::log("%f - %f\n", a.value(), b.value());
     break;
   case Token::Type::Mul:
     result_.push(a * b);
-    Debug::log("%f * %f\n", a.value(), b.value());
     break;
   case Token::Type::Div:
     result_.push(a / b);
-    Debug::log("%f / %f\n", a.value(), b.value());
     break;
   case Token::Type::Mod:
     result_.push(a % b);
-    Debug::log("%f %% %f\n", a.value(), b.value());
     break;
   case Token::Type::Pow:
     result_.push(a.pow(b));
-    Debug::log("%f ^ %f\n", a.value(), b.value());
     break;
   default:
     throw std::logic_error("Unknown operation");
@@ -313,29 +297,13 @@ double Calc::solve(Lexer &lexer) {
     result_.pop();
   }
 
-  Debug::log("expr: ");
-  lexer.first();
-  while (lexer.more()) {
-    auto t = lexer.next();
-    Debug::log("%s ", t.text.c_str());
-  }
-  Debug::log("\n");
-
   auto expr_rpn = expr_to_rpn(lexer);
   if (expr_rpn.empty()) {
     return 0;
   }
 
-  Debug::log("expr rpn: ");
-  for (const auto &i : expr_rpn) {
-    Debug::log("%s ", i.text.c_str());
-  }
-  Debug::log("\n");
-
   calc_expr_rpn(expr_rpn);
   is_correct_ = true;
-
-  Debug::log("result: %f\n", result_.top().value().value());
   return result_pop_r().value().value();
 }
 
