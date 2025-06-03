@@ -2,9 +2,26 @@
 
 #include <debug/debug.hpp>
 
+#include <filesystem>
+
+#include <unistd.h>
+#include <pwd.h>
+
+std::filesystem::path get_home_dir() {
+    if (const char* home = std::getenv("HOME")) {
+        return home;
+    }
+    
+    if (struct passwd* pw = getpwuid(getuid())) {
+        return pw->pw_dir;
+    }
+    
+    throw std::runtime_error("Unable to determine home directory");
+}
+
 namespace jhmnn {
 
-History::History() : History("./history") {}
+History::History() : History(get_home_dir() / ".cache/smucalc/history") {}
 
 History::History(const std::string &path) : path_(path), curr_entry_(0) {
   load();
@@ -13,7 +30,7 @@ History::History(const std::string &path) : path_(path), curr_entry_(0) {
 History::~History() { save(); }
 
 void History::save() {
-  std::fstream f(path_, std::ios_base::out);
+  std::fstream f(path_, std::ios_base::app);
   const auto size = entries_.size();
   const auto begin = size > max_size_ ? size - max_size_ : 0;
   for (auto i = begin; i < size; ++i) {
@@ -23,7 +40,11 @@ void History::save() {
 }
 
 void History::load() {
-  std::fstream f(path_);
+  std::fstream f(path_, std::ios_base::in);
+  if (!f.is_open()) {
+    f.open(path_, std::ios_base::out);
+    return;
+  }
 
   while (!f.fail()) {
     std::string s;

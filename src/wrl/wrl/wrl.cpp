@@ -2,6 +2,9 @@
 
 #include <cstdarg>
 #include <cstdio>
+#include <filesystem>
+
+extern std::filesystem::path get_home_dir();
 
 namespace jhmnn {
 
@@ -10,12 +13,12 @@ bool is_spaces_only(const std::string &s) {
 }
 
 Wrl::Wrl()
-    : hist_("./res/history"), buffer_(hist_.next()), cur_pos_(buffer_->size()) {
-}
+    : hist_(get_home_dir() / ".cache/smucalc/history"),
+      buffer_(hist_.next()), cur_pos_(buffer_->size()) {}
 
 Wrl::Wrl(const std::string &prefix)
-    : hist_("./res/history"), prefix_(prefix), buffer_(hist_.next()),
-      cur_pos_(buffer_->size()) {}
+    : hist_(get_home_dir() / ".cache/smucalc/history"),
+      prefix_(prefix), buffer_(hist_.next()), cur_pos_(buffer_->size()) {}
 
 Wrl::~Wrl() { finalize(); }
 
